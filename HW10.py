@@ -189,7 +189,7 @@ class Board(QGroupBox):
             #             seq[i] = "Red"
             # WHILE LOOPS USE THEMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM CYCLE I AND J THEN ADD ONE TO EACH
 
-            judgement = []
+            judgement = ["Absent", "Absent", "Absent", "Absent", "Absent"]
             i = 0
             tempAns = list(self.answer)
             tempGuess = self.guess
@@ -197,13 +197,13 @@ class Board(QGroupBox):
             while i < len(tempGuess):
                 if tempGuess[i] in tempAns:
                     if tempGuess[i] == tempAns[i]:
-                        judgement.append("Correct")
+                        judgement[i] = ("Correct")
                         tempAns[i] = 0
                     else:
-                        judgement.append("Present")
+                        judgement[i] = ("Present")
                         tempAns[tempAns.index(tempGuess[i])] = 0
                 else:
-                    judgement.append("Absent")
+                    judgement[i] = ("Absent")
                 i += 1
             # print(s)
             print(self.answer)
@@ -223,40 +223,40 @@ class Board(QGroupBox):
 
 
 
-            msg = QMessageBox(self.window())
-            msg.setIcon(QMessageBox.Icon.Warning)
-            msg.setText('Inputted word is not present in the wordlist')
-            msg.setWindowTitle('Invalid Input')
-            msg.setStandardButtons(QMessageBox.StandardButton.Ok)
-            msg.exec()
-            return
-        if len(self.guess) == 5:
+            # msg = QMessageBox(self.window())
+            # msg.setIcon(QMessageBox.Icon.Warning)
+            # msg.setText('Inputted word is not present in the wordlist')
+            # msg.setWindowTitle('Invalid Input')
+            # msg.setStandardButtons(QMessageBox.StandardButton.Ok)
+            # msg.exec()
+            # return
+        # if len(self.guess) == 5:
 
-            judgement = []
-            i = 0
-            tempAns = list(self.answer)
-            tempGuess = self.guess
-            # if len(tempGuess)==5:
-            while i < len(tempGuess):
-                if tempGuess[i] in tempAns:
-                    if tempGuess[i] == tempAns[i]:
-                        judgement.append("Correct")
-                        tempAns[i] = 0
-                    else:
-                        judgement.append("Present")
-                        tempAns[tempAns.index(tempGuess[i])] = 0
-                else:
-                    judgement.append("Absent")
-                i += 1
+            # judgement = ["Absent", "Absent", "Absent", "Absent", "Absent"]
+            # i = 0
+            # tempAns = list(self.answer)
+            # tempGuess = self.guess
+            # # if len(tempGuess)==5:
+            # while i < len(tempGuess):
+            #     if tempGuess[i] in tempAns:
+            #         if tempGuess[i] == tempAns[i]:
+            #             judgement[i] = ("Correct")
+            #             tempAns[i] = 0
+            #         else:
+            #             judgement[i] = ("Present")
+            #             tempAns[tempAns.index(tempGuess[i])] = 0
+            #     else:
+            #         judgement[i] = ("Absent")
+            #     i += 1
 
-            # judgement = self.judge(self.guess)
-            self.agent.update(list(zip(self.guess, judgement)))
-            self.window().leftpane.clear()
-            self.window().leftpane.addItems(self.agent.pool)
-            self.guess.clear()
-            self.column = 0
-            self.represent(judgement)
-            self.tries += 1
+            # # judgement = self.judge(self.guess)
+            # self.agent.update(list(zip(self.guess, judgement)))
+            # self.window().leftpane.clear()
+            # self.window().leftpane.addItems(self.agent.pool)
+            # self.guess.clear()
+            # self.column = 0
+            # self.represent(judgement)
+            # self.tries += 1
             if judgement == ['Correct'] * 5:
                 if ''.join(self.guess) not in WORDLIST:
                     msg = QMessageBox(self.window())
@@ -277,7 +277,8 @@ class Board(QGroupBox):
     
     
     def keyPressEvent(self, e: QKeyEvent) -> None:
-        if e.key() in LETTERS:
+        # if self.grid.itemAtPosition(self.tries, self.column) != None:
+        if (e.key() in LETTERS) & (self.grid.itemAtPosition(self.tries, self.column) != None):
             letter = LETTERS[e.key()]
             if self.column < 5:
                 self.guess.append(letter)
