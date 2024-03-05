@@ -152,8 +152,8 @@ class Board(QGroupBox):
 
                 ### Attempting to check any word at all ###
 
-                correctLetters = {i : len([j for j in self.answer if j == i]) for i in list(self.answer)}
-                sequence = []
+                # correctLetters = {i : len([j for j in self.answer if j == i]) for i in list(self.answer)}
+                # sequence = []
                 # for num,i in enumerate(self.guess):
                 #     if i in correctLetters.keys():
 
@@ -167,10 +167,49 @@ class Board(QGroupBox):
                 #             sequence.append("Red")
                 #     else:
                 #         sequence.append("Red")
-                
+
+                # for n, i in enumerate(self.answer):
+                #     if i in self.guess:
+                #         seq[self.answer.find(i)] = "Green"
+
+                # tempAns = self.answer
+                # tempGuess = self.guess
+                # seq = []
+                # for i in range(5):
+                #     for j in range(5):
+                #         if tempAns[i] == tempGuess[j]:
+                #             seq[i] = "Green"
+                #             tempGuess[j] = "="
+                #             continue
+                #             # BREAK OUT OF THE FIRST FOR LOOP
+                #         elif: tempAns[i] in tempGuess:
+                #             seq[i] = "Yellow"
+                #             tempGuess[tempGuess.find(tempAns[i])] = "-"
+                #         else:
+                #             seq[i] = "Red"
+                # WHILE LOOPS USE THEMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM CYCLE I AND J THEN ADD ONE TO EACH
+
+                s = []
+                i = 0
+                j = 0
+                tempAns = list(self.answer)
+                tempGuess = self.guess
+                while i < 5:
+                    if tempGuess[i] in tempAns:
+                        if tempGuess[i] == tempAns[i]:
+                            s.append("G")
+                            tempAns[i] = 0
+                        else:
+                            s.append("Y")
+                            tempAns[tempAns.index(tempGuess[i])] = 0
+                    else:
+                        s.append("R")
+                    i += 1
+                print(s)
                 print(self.answer)
                 print(self.guess)
-                print(sequence)
+
+                # HAH IT WORKS IT WOOOORKS
 
                 ### ###
 
