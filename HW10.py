@@ -148,98 +148,124 @@ class Board(QGroupBox):
     
     def evaluate(self):
         if self.tries < 4:
-            if ''.join(self.guess) not in WORDLIST:
+            # if ''.join(self.guess) not in WORDLIST:
 
-                ### Attempting to check any word at all ###
+            ### Attempting to check any word at all ###
 
-                # correctLetters = {i : len([j for j in self.answer if j == i]) for i in list(self.answer)}
-                # sequence = []
-                # for num,i in enumerate(self.guess):
-                #     if i in correctLetters.keys():
+            # correctLetters = {i : len([j for j in self.answer if j == i]) for i in list(self.answer)}
+            # sequence = []
+            # for num,i in enumerate(self.guess):
+            #     if i in correctLetters.keys():
 
-                #         if correctLetters[i] > 0:
-                #             correctLetters[i] = correctLetters[i] - 1
-                #             if self.guess[num] == self.answer[num]:
-                #                 sequence.append("Green")
-                #             else:
-                #                 sequence.append("Yellow")
-                #         else: 
-                #             sequence.append("Red")
-                #     else:
-                #         sequence.append("Red")
+            #         if correctLetters[i] > 0:
+            #             correctLetters[i] = correctLetters[i] - 1
+            #             if self.guess[num] == self.answer[num]:
+            #                 sequence.append("Green")
+            #             else:
+            #                 sequence.append("Yellow")
+            #         else: 
+            #             sequence.append("Red")
+            #     else:
+            #         sequence.append("Red")
 
-                # for n, i in enumerate(self.answer):
-                #     if i in self.guess:
-                #         seq[self.answer.find(i)] = "Green"
+            # for n, i in enumerate(self.answer):
+            #     if i in self.guess:
+            #         seq[self.answer.find(i)] = "Green"
 
-                # tempAns = self.answer
-                # tempGuess = self.guess
-                # seq = []
-                # for i in range(5):
-                #     for j in range(5):
-                #         if tempAns[i] == tempGuess[j]:
-                #             seq[i] = "Green"
-                #             tempGuess[j] = "="
-                #             continue
-                #             # BREAK OUT OF THE FIRST FOR LOOP
-                #         elif: tempAns[i] in tempGuess:
-                #             seq[i] = "Yellow"
-                #             tempGuess[tempGuess.find(tempAns[i])] = "-"
-                #         else:
-                #             seq[i] = "Red"
-                # WHILE LOOPS USE THEMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM CYCLE I AND J THEN ADD ONE TO EACH
+            # tempAns = self.answer
+            # tempGuess = self.guess
+            # seq = []
+            # for i in range(5):
+            #     for j in range(5):
+            #         if tempAns[i] == tempGuess[j]:
+            #             seq[i] = "Green"
+            #             tempGuess[j] = "="
+            #             continue
+            #             # BREAK OUT OF THE FIRST FOR LOOP
+            #         elif: tempAns[i] in tempGuess:
+            #             seq[i] = "Yellow"
+            #             tempGuess[tempGuess.find(tempAns[i])] = "-"
+            #         else:
+            #             seq[i] = "Red"
+            # WHILE LOOPS USE THEMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM CYCLE I AND J THEN ADD ONE TO EACH
 
-                s = []
-                i = 0
-                j = 0
-                tempAns = list(self.answer)
-                tempGuess = self.guess
-                while i < 5:
-                    if tempGuess[i] in tempAns:
-                        if tempGuess[i] == tempAns[i]:
-                            s.append("G")
-                            tempAns[i] = 0
-                        else:
-                            s.append("Y")
-                            tempAns[tempAns.index(tempGuess[i])] = 0
+            judgement = []
+            i = 0
+            tempAns = list(self.answer)
+            tempGuess = self.guess
+            # if len(tempGuess)==5:
+            while i < len(tempGuess):
+                if tempGuess[i] in tempAns:
+                    if tempGuess[i] == tempAns[i]:
+                        judgement.append("Correct")
+                        tempAns[i] = 0
                     else:
-                        s.append("R")
-                    i += 1
-                print(s)
-                print(self.answer)
-                print(self.guess)
+                        judgement.append("Present")
+                        tempAns[tempAns.index(tempGuess[i])] = 0
+                else:
+                    judgement.append("Absent")
+                i += 1
+            # print(s)
+            print(self.answer)
+            # print(self.guess)
 
-                # HAH IT WORKS IT WOOOORKS
+            # HAH IT WORKS IT WOOOORKS
 
-                ### ###
+            ### ###
+
+            self.agent.update(list(zip(self.guess, judgement)))
+            self.window().leftpane.clear()
+            self.window().leftpane.addItems(self.agent.pool)
+            self.guess.clear()
+            self.column = 0
+            self.represent(judgement)
+            self.tries += 1
 
 
 
-                msg = QMessageBox(self.window())
-                msg.setIcon(QMessageBox.Icon.Warning)
-                msg.setText('Inputted word is not present in the wordlist')
-                msg.setWindowTitle('Invalid Input')
-                msg.setStandardButtons(QMessageBox.StandardButton.Ok)
-                msg.exec()
-                return
-            if len(self.guess) == 5:
-                judgement = self.judge(self.guess)
-                self.agent.update(list(zip(self.guess, judgement)))
-                self.window().leftpane.clear()
-                self.window().leftpane.addItems(self.agent.pool)
-                self.guess.clear()
-                self.column = 0
-                self.represent(judgement)
-                self.tries += 1
-                if judgement == ['Correct'] * 5:
-                    if ''.join(self.guess) not in WORDLIST:
-                        msg = QMessageBox(self.window())
-                        msg.setIcon(QMessageBox.Icon.Information)
-                        msg.setText('Congratulations! You won!')
-                        msg.setWindowTitle('Success')
-                        msg.setStandardButtons(QMessageBox.StandardButton.Ok)
-                        msg.exec()
-                    self.reset()
+            msg = QMessageBox(self.window())
+            msg.setIcon(QMessageBox.Icon.Warning)
+            msg.setText('Inputted word is not present in the wordlist')
+            msg.setWindowTitle('Invalid Input')
+            msg.setStandardButtons(QMessageBox.StandardButton.Ok)
+            msg.exec()
+            return
+        if len(self.guess) == 5:
+
+            judgement = []
+            i = 0
+            tempAns = list(self.answer)
+            tempGuess = self.guess
+            # if len(tempGuess)==5:
+            while i < len(tempGuess):
+                if tempGuess[i] in tempAns:
+                    if tempGuess[i] == tempAns[i]:
+                        judgement.append("Correct")
+                        tempAns[i] = 0
+                    else:
+                        judgement.append("Present")
+                        tempAns[tempAns.index(tempGuess[i])] = 0
+                else:
+                    judgement.append("Absent")
+                i += 1
+
+            # judgement = self.judge(self.guess)
+            self.agent.update(list(zip(self.guess, judgement)))
+            self.window().leftpane.clear()
+            self.window().leftpane.addItems(self.agent.pool)
+            self.guess.clear()
+            self.column = 0
+            self.represent(judgement)
+            self.tries += 1
+            if judgement == ['Correct'] * 5:
+                if ''.join(self.guess) not in WORDLIST:
+                    msg = QMessageBox(self.window())
+                    msg.setIcon(QMessageBox.Icon.Information)
+                    msg.setText('Congratulations! You won!')
+                    msg.setWindowTitle('Success')
+                    msg.setStandardButtons(QMessageBox.StandardButton.Ok)
+                    msg.exec()
+                self.reset()
         if self.tries == 4:
             msg = QMessageBox(self.window())
             msg.setIcon(QMessageBox.Icon.Information)
