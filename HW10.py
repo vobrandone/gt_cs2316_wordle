@@ -39,7 +39,7 @@ LETTERS = {
     Qt.Key.Key_Z: 'z'
 }
 
-WORDLIST = Path("text-five.txt").read_text().splitlines()
+WORDLIST = Path("wordle-answers-alphabetical.txt").read_text().splitlines()
 frequencies = Counter(''.join(WORDLIST))
 
 QLABEL_BASE = "QLabel {{background: #{}; color: #00aeef; border: 3px inset #5252cc; font: 'Noto Serif';}}"
@@ -100,7 +100,7 @@ class LeftPane(QListWidget):
     def onItemClicked(self, item):
         choice = item.text()
         board = self.window().board
-        if board.tries < 4:
+        if board.tries < 6: ## Number of guesses
             board.guess = list(choice)
             for i, l in zip(range(5), choice):
                 board.grid.itemAtPosition(board.tries, i).widget().setText(l)
@@ -116,7 +116,7 @@ class Board(QGroupBox):
         self.agent = Agent()
         self.grid = QGridLayout(self)
         self.won = False
-        for row in range(4):
+        for row in range(6): ## Number of guesses
             for column in range(5):
                 self.grid.addWidget(Cell(), row, column)
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
@@ -157,7 +157,7 @@ class Board(QGroupBox):
 
     
     def evaluate(self):
-        if self.tries < 4:
+        if self.tries < 6: ## Number of guesses
             # if ''.join(self.guess) not in WORDLIST:
 
             ### Attempting to check any word at all ###
@@ -209,56 +209,57 @@ class Board(QGroupBox):
             url = f"https://www.dictionary.com/browse/{''.join(self.guess)}"
             r = requests.get(url)
             # print(r.status_code)
-            if r.status_code == 200:
-                judgement = ["Absent", "Absent", "Absent", "Absent", "Absent"]
-                i = 0
-                tempAns = list(self.answer)
-                tempGuess = self.guess
-                # if len(tempGuess)==5:
-                while i < len(tempGuess):
-                    if tempGuess[i] in tempAns:
-                        if tempGuess[i] == tempAns[i]:
-                            judgement[i] = ("Correct")
-                            tempAns[i] = 0
+            if len(self.guess) == 5:
+                if r.status_code == 200:
+                    judgement = ["Absent", "Absent", "Absent", "Absent", "Absent"]
+                    i = 0
+                    tempAns = list(self.answer)
+                    tempGuess = self.guess
+                    # if len(tempGuess)==5:
+                    while i < len(tempGuess):
+                        if tempGuess[i] in tempAns:
+                            if tempGuess[i] == tempAns[i]:
+                                judgement[i] = ("Correct")
+                                tempAns[i] = 0
+                            else:
+                                judgement[i] = ("Present")
+                                tempAns[tempAns.index(tempGuess[i])] = 0
                         else:
-                            judgement[i] = ("Present")
-                            tempAns[tempAns.index(tempGuess[i])] = 0
-                    else:
-                        judgement[i] = ("Absent")
-                    i += 1
-                # print(s)
-                print(self.answer)
-                # print(self.guess)
+                            judgement[i] = ("Absent")
+                        i += 1
+                    # print(s)
+                    print(self.answer) # Checking answer on terminal
+                    # print(self.guess)
 
-                # HAH IT WORKS IT WOOOORKS
+                    # HAH IT WORKS IT WOOOORKS
 
-                ### ###
+                    ### ###
 
-                self.agent.update(list(zip(self.guess, judgement)))
-                self.window().leftpane.clear()
-                self.window().leftpane.addItems(self.agent.pool)
-                self.guess.clear()
-                self.column = 0
-                self.represent(judgement)
-                self.tries += 1
+                    self.agent.update(list(zip(self.guess, judgement)))
+                    self.window().leftpane.clear()
+                    self.window().leftpane.addItems(self.agent.pool)
+                    self.guess.clear()
+                    self.column = 0
+                    self.represent(judgement)
+                    self.tries += 1
 
-                if judgement == ['Correct'] * 5:
-                    # if ''.join(self.guess) not in WORDLIST:
+                    if judgement == ['Correct'] * 5:
+                        # if ''.join(self.guess) not in WORDLIST:
+                        msg = QMessageBox(self.window())
+                        msg.setIcon(QMessageBox.Icon.Information)
+                        msg.setText('Congratulations! You won!')
+                        msg.setWindowTitle('Success')
+                        msg.setStandardButtons(QMessageBox.StandardButton.Ok)
+                        msg.exec()
+                        self.reset()
+
+                else:
                     msg = QMessageBox(self.window())
-                    msg.setIcon(QMessageBox.Icon.Information)
-                    msg.setText('Congratulations! You won!')
-                    msg.setWindowTitle('Success')
+                    msg.setIcon(QMessageBox.Icon.Warning)
+                    msg.setText('Invalid word.')
+                    msg.setWindowTitle('Invalid Input')
                     msg.setStandardButtons(QMessageBox.StandardButton.Ok)
                     msg.exec()
-                    self.reset()
-
-            else:
-                msg = QMessageBox(self.window())
-                msg.setIcon(QMessageBox.Icon.Warning)
-                msg.setText('Invalid word.')
-                msg.setWindowTitle('Invalid Input')
-                msg.setStandardButtons(QMessageBox.StandardButton.Ok)
-                msg.exec()
 
 
 
@@ -271,7 +272,7 @@ class Board(QGroupBox):
                 # return
             # if len(self.guess) == 5:
 
-                # judgement = ["Absent", "Absent", "Absent", "Absent", "Absent"]
+                # judgement = ["Absent", "Absent", "Absenta", "Absent", "Absent"]
                 # i = 0
                 # tempAns = list(self.answer)
                 # tempGuess = self.guess
@@ -305,7 +306,7 @@ class Board(QGroupBox):
                 #     msg.setStandardButtons(QMessageBox.StandardButton.Ok)
                 #     msg.exec()
                 #     self.reset()
-            if self.tries == 4:
+            if self.tries == 6: ## Number of guesses
                 msg = QMessageBox(self.window())
                 msg.setIcon(QMessageBox.Icon.Information)
                 msg.setText('Condolences... You lost...')
@@ -380,6 +381,7 @@ class Window(QMainWindow):
         self.leftpane = LeftPane()
         self.leftpane.addItems(WORDLIST)
         self.hbox.addWidget(self.leftpane)
+        self.leftpane.setHidden(True)
         self.board = Board()
         self.hbox.addWidget(self.board)
         self.setWindowTitle('Wordle 2 Bitches')
